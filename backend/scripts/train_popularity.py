@@ -1,5 +1,6 @@
 import pandas as pd
 from pathlib import Path
+import os
 
 """
 Train a simple popularity baseline using MovieLens data.
@@ -45,9 +46,16 @@ def main() -> None:
     df['release_year'] = df['title'].apply(extract_year)
     df.rename(columns={'avg_rating': 'rating'}, inplace=True)
     df_out = df[['movieId','title','release_year','rating']].copy()
-    out_dir = root / 'app' / 'data'
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / 'top_movies.csv'
+    # Use env var POPULARITY_CSV_PATH if provided, else default to app/data
+    env_path = os.getenv('POPULARITY_CSV_PATH')
+    if env_path:
+        out_dir = Path(env_path).parent
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = Path(env_path)
+    else:
+        out_dir = root / 'app' / 'data'
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / 'top_movies.csv'
     df_out.to_csv(out_path, index=False)
     print(f"Wrote {out_path}")
 

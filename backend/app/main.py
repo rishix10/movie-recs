@@ -41,6 +41,7 @@ async def health() -> dict:
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 TMDB_BASE = "https://api.themoviedb.org/3"
 TMDB_IMG = "https://image.tmdb.org/t/p/w500"
+POPULARITY_CSV = os.getenv("POPULARITY_CSV_PATH") or os.path.join(os.path.dirname(__file__), 'data', 'top_movies.csv')
 
 async def _tmdb_search(query: str, limit: int) -> List[Movie]:
     if not TMDB_API_KEY:
@@ -112,8 +113,7 @@ def _load_popular_from_csv(path: str, limit: int) -> List[Movie]:
 async def recommend(body: RecommendRequest) -> RecommendResponse:
     """Get personalized movie recommendations (popularity fallback)."""
     # TODO: replace with hybrid recommender (collaborative + content-based)
-    popular_path = os.path.join(os.path.dirname(__file__), 'data', 'top_movies.csv')
-    items = _load_popular_from_csv(popular_path, body.limit)
+    items = _load_popular_from_csv(POPULARITY_CSV, body.limit)
     if items:
         return RecommendResponse(results=items)
     # fallback curated if no data file
