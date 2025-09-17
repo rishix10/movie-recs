@@ -13,6 +13,9 @@ services:
         fromDatabase:
           name: movie-recs-db
           property: connectionString
+      - key: TMDB_API_KEY
+        fromSecret:
+          name: TMDB_API_KEY
       - key: POPULARITY_CSV_PATH
         value: /tmp/top_movies.csv
     regions:
