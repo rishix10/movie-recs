@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: movie-recs-api
+    env: docker
+    rootDir: backend
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: movie-recs-db
+          property: connectionString
+    regions:
+      - oregon
+
+  - type: web
+    name: movie-recs-frontend
+    env: node
+    rootDir: frontend
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start -- -p 3000
+    autoDeploy: true
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://movie-recs-api.onrender.com
+    regions:
+      - oregon
+
+databases:
+  - name: movie-recs-db
+    plan: free
+
