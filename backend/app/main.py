@@ -6,7 +6,9 @@ import os
 import asyncio
 import httpx
 import csv
+from dotenv import load_dotenv
 
+load_dotenv()
 app = FastAPI(title="Movie Recs API", version="0.1.0")
 
 # CORS for local dev frontend
@@ -47,7 +49,12 @@ async def _tmdb_search(query: str, limit: int) -> List[Movie]:
     if not TMDB_API_KEY:
         return []
     params = {"query": query, "include_adult": "false", "language": "en-US", "page": 1}
-    headers = {"Authorization": f"Bearer {TMDB_API_KEY}", "accept": "application/json"}
+    headers = {"accept": "application/json"}
+    # Support both v4 (Bearer token starting with eyJ...) and v3 (32-char hex) keys
+    if TMDB_API_KEY and (TMDB_API_KEY.startswith("eyJ") and len(TMDB_API_KEY) > 40):
+        headers["Authorization"] = f"Bearer {TMDB_API_KEY}"
+    else:
+        params["api_key"] = TMDB_API_KEY
     async with httpx.AsyncClient(timeout=10.0) as client:
         resp = await client.get(f"{TMDB_BASE}/search/movie", params=params, headers=headers)
         if resp.status_code != 200:
