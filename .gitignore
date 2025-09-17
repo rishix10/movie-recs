@@ -1,0 +1,1 @@
+# Node\nfrontend/node_modules\nfrontend/.next\nfrontend/.env.local\n\n# Python\nbackend/.venv\n__pycache__/\n*.pyc\n.env\n\n# OS\n.DS_Store\nThumbs.db\n\n# Docker\npgdata/\n\n# Editor\n.vscode/\n.idea/\n
